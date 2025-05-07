@@ -16,7 +16,6 @@ import { FileUpload } from "@/components/ui/file-upload";
 import userService from "@/api/services/userService";
 import { Camera } from "lucide-react";
 import { ImageCropper } from "@/components/ui/image-cropper";
-import ProfileImageDebug from "@/components/debug/ProfileImageDebug";
 
 const Profile = () => {
   const location = useLocation();
@@ -226,7 +225,7 @@ const Profile = () => {
 
   // Show loading screen while fetching user data
   if (pageLoading || authLoading) {
-    return <LoadingScreen message="Loading profile..." />;
+    return <LoadingScreen />;
   }
 
   // Get initials for avatar fallback
@@ -663,9 +662,6 @@ const Profile = () => {
                 </Card>
               </TabsContent>
             </Tabs>
-
-            {/* Debug component - remove in production */}
-            <ProfileImageDebug />
           </div>
         </div>
       </div>

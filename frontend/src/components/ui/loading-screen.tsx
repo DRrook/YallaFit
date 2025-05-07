@@ -5,6 +5,7 @@ interface LoadingScreenProps {
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ message = 'Loading...' }) => {
+  // Always use "Loading..." regardless of the message passed
   return (
     <div className="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50">
       <div className="flex flex-col items-center justify-center">
@@ -16,7 +17,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ message = 'Loading...' })
             <div className="h-full bg-yalla-green animate-pulse rounded-full"></div>
           </div>
         </div>
-        <p className="mt-4 text-white text-sm">{message}</p>
+        <p className="mt-4 text-white text-sm">Loading...</p>
       </div>
     </div>
   );

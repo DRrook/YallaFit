@@ -163,7 +163,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Show loading screen when authentication state is changing
   if (isLoading) {
-    return <LoadingScreen message={user ? "Logging out..." : "Loading..."} />;
+    return <LoadingScreen />;
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

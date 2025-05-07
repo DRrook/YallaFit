@@ -290,7 +290,10 @@ const Profile = () => {
     // Update the user object in state to show the preview immediately
     if (user) {
       // Create a new user object with the updated profile image (temporary preview)
+      // Use the direct object URL for immediate preview
       const updatedUser = { ...user, profile_image: previewUrl };
+
+      console.log('Setting temporary preview image:', previewUrl);
 
       // Update the auth context with the temporary preview
       if (typeof window !== 'undefined') {
@@ -333,7 +336,7 @@ const Profile = () => {
                           <img
                             src={user.profile_image.startsWith('http')
                               ? user.profile_image
-                              : `${import.meta.env.VITE_API_URL || ''}${user.profile_image}`
+                              : `http://127.0.0.1:8000${user.profile_image}`
                             }
                             alt={`${profileData.firstName} ${profileData.lastName}`}
                             className="h-full w-full rounded-full object-cover"

@@ -164,28 +164,29 @@ const Profile = () => {
   };
 
   return (
-    <div className="container py-8 px-4 md:px-6">
-      <div className="grid gap-8 lg:grid-cols-5">
-        <div className="lg:col-span-2">
-          <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
-            <CardHeader>
-              <div className="flex flex-col items-center space-y-4">
-                <Avatar className="h-24 w-24">
-                  {user?.profile_image ? (
-                    <AvatarImage src={user.profile_image} />
-                  ) : null}
-                  <AvatarFallback className="text-xl bg-yalla-green text-black">
-                    {getInitials()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-center">
-                  <CardTitle className="text-xl">{`${profileData.firstName} ${profileData.lastName}`}</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    {userRole === "coach" ? "Fitness Coach" : `Member since ${new Date(user?.created_at || Date.now()).getFullYear()}`}
-                  </CardDescription>
+    <>
+      <div className="container py-8 px-4 md:px-6">
+        <div className="grid gap-8 lg:grid-cols-5">
+          <div className="lg:col-span-2">
+            <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
+              <CardHeader>
+                <div className="flex flex-col items-center space-y-4">
+                  <Avatar className="h-24 w-24">
+                    {user?.profile_image ? (
+                      <AvatarImage src={user.profile_image} />
+                    ) : null}
+                    <AvatarFallback className="text-xl bg-yalla-green text-black">
+                      {getInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="text-center">
+                    <CardTitle className="text-xl">{`${profileData.firstName} ${profileData.lastName}`}</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      {userRole === "coach" ? "Fitness Coach" : `Member since ${new Date(user?.created_at || Date.now()).getFullYear()}`}
+                    </CardDescription>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
+              </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
@@ -438,6 +439,7 @@ const Profile = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

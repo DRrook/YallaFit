@@ -47,12 +47,12 @@ const DashboardSidebar = () => {
     ],
     coach: [
       { to: "/sessions", label: "My Sessions", icon: <BarChart3 className="h-4 w-4" /> },
-      { to: "/coach/bookings", label: "Bookings", icon: <Bookmark className="h-4 w-4" /> },
+      { to: "/bookings", label: "Bookings", icon: <Bookmark className="h-4 w-4" /> },
       // Add other coach links
     ],
     client: [
       { to: "/client/sessions", label: "Find Sessions", icon: <BarChart3 className="h-4 w-4" /> },
-      { to: "/client/bookings", label: "My Bookings", icon: <Bookmark className="h-4 w-4" /> },
+      { to: "/bookings", label: "My Bookings", icon: <Bookmark className="h-4 w-4" /> },
       // Add other client links
     ],
   };

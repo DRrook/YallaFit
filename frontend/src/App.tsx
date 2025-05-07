@@ -21,6 +21,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Sessions from "./pages/Sessions";
+import Bookings from "./pages/Bookings";
 
 // Layouts
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -53,6 +54,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/sessions" element={<Sessions />} />
+              <Route path="/bookings" element={<Bookings />} />
               {/* You can add more routes here that should use DashboardLayout */}
             </Route>
 

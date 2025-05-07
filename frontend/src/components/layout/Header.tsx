@@ -29,11 +29,15 @@ interface HeaderProps {
   userRole?: UserRole;
 }
 
-const Header = ({ isAuthenticated = false, userRole = null }: HeaderProps) => {
+const Header = ({ isAuthenticated: propIsAuthenticated = false, userRole: propUserRole = null }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const { logout } = useAuth();
+  const { logout, isAuthenticated: contextIsAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+
+  // Use props if provided, otherwise use context values
+  const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : contextIsAuthenticated;
+  const userRole = propUserRole !== undefined ? propUserRole : (user?.role as UserRole || null);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);

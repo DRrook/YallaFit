@@ -148,21 +148,28 @@ const sessionService = {
   // Get all sessions for the current coach
   getSessions: async (): Promise<SessionsResponse> => {
     try {
-      // Simulate API call delay
-      await delay(800);
+      // Try to get from API first
+      try {
+        const response = await apiClient.get<SessionsResponse>('/api/sessions');
 
-      // In a real implementation, this would call the API
-      // const response = await apiClient.get<SessionsResponse>('/api/sessions');
-      // return response.data;
-
-      // Get sessions from memory (already initialized from localStorage)
-      return {
-        status: true,
-        message: "Sessions retrieved successfully",
-        data: {
-          sessions: sessions
+        // Save to localStorage as backup
+        if (response.data.status && response.data.data.sessions) {
+          saveSessions(response.data.data.sessions);
         }
-      };
+
+        return response.data;
+      } catch (apiError) {
+        console.error('API error, falling back to localStorage:', apiError);
+
+        // Fallback to localStorage if API fails
+        return {
+          status: true,
+          message: "Sessions retrieved from local storage",
+          data: {
+            sessions: sessions
+          }
+        };
+      }
     } catch (error) {
       console.error('Error fetching sessions:', error);
       throw error;
@@ -172,27 +179,28 @@ const sessionService = {
   // Get a single session by ID
   getSession: async (id: number): Promise<SessionResponse> => {
     try {
-      // Simulate API call delay
-      await delay(500);
+      // Try to get from API first
+      try {
+        const response = await apiClient.get<SessionResponse>(`/api/sessions/${id}`);
+        return response.data;
+      } catch (apiError) {
+        console.error('API error, falling back to localStorage:', apiError);
 
-      // In a real implementation, this would call the API
-      // const response = await apiClient.get<SessionResponse>(`/api/sessions/${id}`);
-      // return response.data;
+        // Fallback to localStorage if API fails
+        const session = sessions.find(s => s.id === id);
 
-      // Mock implementation
-      const session = sessions.find(s => s.id === id);
-
-      if (!session) {
-        throw new Error('Session not found');
-      }
-
-      return {
-        status: true,
-        message: "Session retrieved successfully",
-        data: {
-          session
+        if (!session) {
+          throw new Error('Session not found');
         }
-      };
+
+        return {
+          status: true,
+          message: "Session retrieved from local storage",
+          data: {
+            session
+          }
+        };
+      }
     } catch (error) {
       console.error('Error fetching session:', error);
       throw error;
@@ -202,35 +210,51 @@ const sessionService = {
   // Create a new session
   createSession: async (sessionData: SessionCreateData): Promise<SessionResponse> => {
     try {
-      // Simulate API call delay
-      await delay(1000);
+      // Try to create via API first
+      try {
+        const response = await apiClient.post<SessionResponse>('/api/sessions', sessionData);
 
-      // In a real implementation, this would call the API
-      // const response = await apiClient.post<SessionResponse>('/api/sessions', sessionData);
-      // return response.data;
+        // Update local storage with the new session
+        if (response.data.status && response.data.data.session) {
+          const newSession = response.data.data.session;
+          const updatedSessions = [...sessions, newSession];
+          sessions = updatedSessions;
+          saveSessions(updatedSessions);
 
-      // Create new session
-      const newSession: Session = {
-        ...sessionData,
-        id: nextId++,
-        enrolled: 0,
-        status: 'active'
-      };
-
-      // Update in-memory sessions
-      const updatedSessions = [...sessions, newSession];
-      sessions = updatedSessions;
-
-      // Save to localStorage
-      saveSessions(updatedSessions);
-
-      return {
-        status: true,
-        message: "Session created successfully",
-        data: {
-          session: newSession
+          // Update nextId if necessary
+          if (newSession.id >= nextId) {
+            nextId = newSession.id + 1;
+          }
         }
-      };
+
+        return response.data;
+      } catch (apiError) {
+        console.error('API error, falling back to localStorage:', apiError);
+
+        // Fallback to localStorage if API fails
+        // Create new session locally
+        const newSession: Session = {
+          ...sessionData,
+          id: nextId++,
+          enrolled: 0,
+          status: 'active'
+        };
+
+        // Update in-memory sessions
+        const updatedSessions = [...sessions, newSession];
+        sessions = updatedSessions;
+
+        // Save to localStorage
+        saveSessions(updatedSessions);
+
+        return {
+          status: true,
+          message: "Session created in local storage (offline mode)",
+          data: {
+            session: newSession
+          }
+        };
+      }
     } catch (error) {
       console.error('Error creating session:', error);
       throw error;
@@ -240,41 +264,57 @@ const sessionService = {
   // Update an existing session
   updateSession: async (sessionData: SessionUpdateData): Promise<SessionResponse> => {
     try {
-      // Simulate API call delay
-      await delay(1000);
+      // Try to update via API first
+      try {
+        const response = await apiClient.put<SessionResponse>(`/api/sessions/${sessionData.id}`, sessionData);
 
-      // In a real implementation, this would call the API
-      // const response = await apiClient.put<SessionResponse>(`/api/sessions/${sessionData.id}`, sessionData);
-      // return response.data;
+        // Update local storage with the updated session
+        if (response.data.status && response.data.data.session) {
+          const updatedSession = response.data.data.session;
+          const index = sessions.findIndex(s => s.id === sessionData.id);
 
-      // Find session to update
-      const index = sessions.findIndex(s => s.id === sessionData.id);
-
-      if (index === -1) {
-        throw new Error('Session not found');
-      }
-
-      // Create updated session object
-      const updatedSession = {
-        ...sessions[index],
-        ...sessionData
-      };
-
-      // Update in-memory sessions
-      const updatedSessions = [...sessions];
-      updatedSessions[index] = updatedSession;
-      sessions = updatedSessions;
-
-      // Save to localStorage
-      saveSessions(updatedSessions);
-
-      return {
-        status: true,
-        message: "Session updated successfully",
-        data: {
-          session: updatedSession
+          if (index !== -1) {
+            const updatedSessions = [...sessions];
+            updatedSessions[index] = updatedSession;
+            sessions = updatedSessions;
+            saveSessions(updatedSessions);
+          }
         }
-      };
+
+        return response.data;
+      } catch (apiError) {
+        console.error('API error, falling back to localStorage:', apiError);
+
+        // Fallback to localStorage if API fails
+        // Find session to update
+        const index = sessions.findIndex(s => s.id === sessionData.id);
+
+        if (index === -1) {
+          throw new Error('Session not found');
+        }
+
+        // Create updated session object
+        const updatedSession = {
+          ...sessions[index],
+          ...sessionData
+        };
+
+        // Update in-memory sessions
+        const updatedSessions = [...sessions];
+        updatedSessions[index] = updatedSession;
+        sessions = updatedSessions;
+
+        // Save to localStorage
+        saveSessions(updatedSessions);
+
+        return {
+          status: true,
+          message: "Session updated in local storage (offline mode)",
+          data: {
+            session: updatedSession
+          }
+        };
+      }
     } catch (error) {
       console.error('Error updating session:', error);
       throw error;
@@ -284,31 +324,39 @@ const sessionService = {
   // Delete a session
   deleteSession: async (id: number): Promise<{ status: boolean; message: string }> => {
     try {
-      // Simulate API call delay
-      await delay(800);
+      // Try to delete via API first
+      try {
+        const response = await apiClient.delete(`/api/sessions/${id}`);
 
-      // In a real implementation, this would call the API
-      // const response = await apiClient.delete(`/api/sessions/${id}`);
-      // return response.data;
+        // Update local storage
+        const updatedSessions = sessions.filter(s => s.id !== id);
+        sessions = updatedSessions;
+        saveSessions(updatedSessions);
 
-      // Find session to delete
-      const index = sessions.findIndex(s => s.id === id);
+        return response.data;
+      } catch (apiError) {
+        console.error('API error, falling back to localStorage:', apiError);
 
-      if (index === -1) {
-        throw new Error('Session not found');
+        // Fallback to localStorage if API fails
+        // Find session to delete
+        const index = sessions.findIndex(s => s.id === id);
+
+        if (index === -1) {
+          throw new Error('Session not found');
+        }
+
+        // Update in-memory sessions
+        const updatedSessions = sessions.filter(s => s.id !== id);
+        sessions = updatedSessions;
+
+        // Save to localStorage
+        saveSessions(updatedSessions);
+
+        return {
+          status: true,
+          message: "Session deleted in local storage (offline mode)"
+        };
       }
-
-      // Update in-memory sessions
-      const updatedSessions = sessions.filter(s => s.id !== id);
-      sessions = updatedSessions;
-
-      // Save to localStorage
-      saveSessions(updatedSessions);
-
-      return {
-        status: true,
-        message: "Session deleted successfully"
-      };
     } catch (error) {
       console.error('Error deleting session:', error);
       throw error;

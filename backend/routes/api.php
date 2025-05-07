@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ExerciseController;
+use App\Http\Controllers\API\SessionController;
 use App\Http\Controllers\API\TestController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\UserWorkoutController;
@@ -63,4 +64,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('user/workouts/{id}', [UserWorkoutController::class, 'show']);
     Route::put('user/workouts/{id}', [UserWorkoutController::class, 'update']);
     Route::delete('user/workouts/{id}', [UserWorkoutController::class, 'destroy']);
+
+    // Session routes
+    Route::get('sessions', [SessionController::class, 'index']);
+    Route::post('sessions', [SessionController::class, 'store']);
+    Route::get('sessions/{id}', [SessionController::class, 'show']);
+    Route::put('sessions/{id}', [SessionController::class, 'update']);
+    Route::delete('sessions/{id}', [SessionController::class, 'destroy']);
 });

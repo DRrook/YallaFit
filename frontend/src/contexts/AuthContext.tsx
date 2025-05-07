@@ -50,7 +50,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(JSON.parse(storedUser) as User);
     }
 
+    // Listen for auth-update events
+    const handleAuthUpdate = (event: CustomEvent) => {
+      if (event.detail) {
+        setUser(event.detail as User);
+      }
+    };
+
+    window.addEventListener('auth-update', handleAuthUpdate as EventListener);
+
+    // Listen for storage events to sync user state across tabs
+    const handleStorageChange = () => {
+      const updatedUser = localStorage.getItem('user');
+      if (updatedUser) {
+        setUser(JSON.parse(updatedUser) as User);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
     setIsLoading(false);
+
+    return () => {
+      window.removeEventListener('auth-update', handleAuthUpdate as EventListener);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const login = async (email: string, password: string) => {

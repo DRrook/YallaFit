@@ -84,8 +84,8 @@ const Profile = () => {
     setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleProfileUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleProfileUpdate = async (e: React.FormEvent | null, uploadedImage?: File) => {
+    if (e) e.preventDefault();
     setIsLoading(true);
 
     try {
@@ -102,7 +102,7 @@ const Profile = () => {
           specialization: profileData.specialization,
           experience: profileData.experience
         }),
-        ...(profileImage && { profile_image: profileImage })
+        ...(uploadedImage ? { profile_image: uploadedImage } : profileImage ? { profile_image: profileImage } : {})
       };
 
       // Call the API to update the profile
@@ -110,9 +110,22 @@ const Profile = () => {
 
       // Update the auth context with the new user data
       if (response.status && response.data.user) {
-        // The user service already updates localStorage
-        // We just need to refresh the page or update the state
-        window.location.reload(); // Simple solution to refresh user data
+        // If this is not a direct form submission (e.g., from image cropper)
+        // don't reload the page, just update the user in the auth context
+        if (!e) {
+          // The user service already updates localStorage
+          // We just need to update the auth context
+          const { user: updatedUser } = response.data;
+
+          // Update the auth context by dispatching an event
+          if (typeof window !== 'undefined') {
+            const authEvent = new CustomEvent('auth-update', { detail: updatedUser });
+            window.dispatchEvent(authEvent);
+          }
+        } else {
+          // For form submissions, reload the page to refresh all data
+          window.location.reload();
+        }
       }
 
       setIsLoading(false);
@@ -203,11 +216,24 @@ const Profile = () => {
 
     // Update the user object in state to show the preview immediately
     if (user) {
+      // Create a new user object with the updated profile image
       const updatedUser = { ...user, profile_image: previewUrl };
+
+      // Update localStorage
       localStorage.setItem('user', JSON.stringify(updatedUser));
-      // Force a re-render by updating the user in localStorage
-      // In a real app, you would update the user context instead
-      window.dispatchEvent(new Event('storage'));
+
+      // Update the auth context
+      if (typeof window !== 'undefined') {
+        // Force a re-render by updating the user in the auth context
+        const authEvent = new CustomEvent('auth-update', { detail: updatedUser });
+        window.dispatchEvent(authEvent);
+
+        // Also trigger a storage event for components listening to localStorage changes
+        window.dispatchEvent(new Event('storage'));
+      }
+
+      // Immediately save the profile to the server
+      handleProfileUpdate(null, croppedFile);
     }
   };
 
@@ -238,7 +264,15 @@ const Profile = () => {
                   <div className="relative cursor-pointer group" onClick={() => document.getElementById('profile-photo-upload')?.click()}>
                     <Avatar className="h-24 w-24 border-2 border-transparent group-hover:border-yalla-green transition-colors">
                       {user?.profile_image ? (
-                        <AvatarImage src={user.profile_image} alt={`${profileData.firstName} ${profileData.lastName}`} />
+                        <AvatarImage
+                          src={user.profile_image}
+                          alt={`${profileData.firstName} ${profileData.lastName}`}
+                          onError={(e) => {
+                            // If image fails to load, show fallback
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
                       ) : null}
                       <AvatarFallback className="text-xl bg-yalla-green text-black">
                         {getInitials()}

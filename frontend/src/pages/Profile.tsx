@@ -12,6 +12,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { UserRole } from "@/components/layout/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingScreen from "@/components/ui/loading-screen";
+import { FileUpload } from "@/components/ui/file-upload";
+import userService from "@/api/services/userService";
 
 const Profile = () => {
   const location = useLocation();
@@ -22,6 +24,7 @@ const Profile = () => {
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
 
   // Profile fields
   const [profileData, setProfileData] = useState({
@@ -82,15 +85,11 @@ const Profile = () => {
     setIsLoading(true);
 
     try {
-      // In a real implementation, you would call an API endpoint to update the user profile
-      // For now, we'll simulate a successful update
-
       // Construct the full name from first and last name
       const fullName = `${profileData.firstName} ${profileData.lastName}`.trim();
 
-      // Create updated user object
-      const updatedUserData = {
-        ...user,
+      // Create profile update data
+      const updateData = {
         name: fullName,
         email: profileData.email,
         phone: profileData.phone,
@@ -98,31 +97,36 @@ const Profile = () => {
         ...(userRole === 'coach' && {
           specialization: profileData.specialization,
           experience: profileData.experience
-        })
+        }),
+        ...(profileImage && { profile_image: profileImage })
       };
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call the API to update the profile
+      const response = await userService.updateProfile(updateData);
 
-      // Update local storage to reflect changes (in a real app, this would come from the API)
-      localStorage.setItem('user', JSON.stringify(updatedUserData));
+      // Update the auth context with the new user data
+      if (response.status && response.data.user) {
+        // The user service already updates localStorage
+        // We just need to refresh the page or update the state
+        window.location.reload(); // Simple solution to refresh user data
+      }
 
       setIsLoading(false);
       toast({
         title: "Profile updated",
         description: "Your profile information has been updated successfully.",
       });
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
       toast({
         title: "Update failed",
-        description: "There was an error updating your profile. Please try again.",
+        description: error.response?.data?.message || "There was an error updating your profile. Please try again.",
         variant: "destructive"
       });
     }
   };
 
-  const handlePasswordChange = (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -137,20 +141,35 @@ const Profile = () => {
       return;
     }
 
-    // Simulate password change
-    setTimeout(() => {
+    try {
+      // Call the API to update the password
+      await userService.updatePassword({
+        current_password: profileData.currentPassword,
+        password: profileData.newPassword,
+        password_confirmation: profileData.confirmPassword,
+      });
+
       setIsLoading(false);
       toast({
         title: "Password changed",
         description: "Your password has been updated successfully.",
       });
+
+      // Clear password fields
       setProfileData((prev) => ({
         ...prev,
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       }));
-    }, 1000);
+    } catch (error: any) {
+      setIsLoading(false);
+      toast({
+        title: "Password update failed",
+        description: error.response?.data?.message || "There was an error updating your password. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Show loading screen while fetching user data
@@ -323,6 +342,19 @@ const Profile = () => {
                           onChange={handleInputChange}
                           rows={4}
                           className="bg-yalla-black text-white border-yalla-light-gray focus:border-yalla-green"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="profile_image" className="text-white">
+                          Profile Photo
+                        </Label>
+                        <FileUpload
+                          onChange={setProfileImage}
+                          value={profileImage}
+                          previewUrl={user?.profile_image}
+                          accept="image/*"
+                          maxSize={2}
                         />
                       </div>
 

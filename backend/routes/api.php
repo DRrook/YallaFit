@@ -4,6 +4,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ExerciseController;
 use App\Http\Controllers\API\TestController;
+use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\UserWorkoutController;
 use App\Http\Controllers\API\WorkoutController;
 use Illuminate\Http\Request;
@@ -38,6 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // User routes
     Route::get('user', [AuthController::class, 'user']);
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('user/profile', [UserController::class, 'updateProfile']);
+    Route::post('user/password', [UserController::class, 'updatePassword']);
 
     // Category routes (admin only)
     Route::post('categories', [CategoryController::class, 'store']);

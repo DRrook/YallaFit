@@ -144,10 +144,19 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
+        // Get the authenticated user with fresh data
+        $user = $request->user()->fresh();
+
+        // Log the user data for debugging
+        \Log::info('User data retrieved', [
+            'user_id' => $user->id,
+            'has_profile_image' => !empty($user->profile_image)
+        ]);
+
         return response()->json([
             'status' => true,
             'data' => [
-                'user' => $request->user()
+                'user' => $user
             ]
         ], 200);
     }

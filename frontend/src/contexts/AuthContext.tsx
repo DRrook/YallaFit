@@ -21,6 +21,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<any>;
   register: (name: string, email: string, password: string, passwordConfirmation: string, role?: UserRole) => Promise<any>;
   logout: () => Promise<void>;
+  refreshUserData: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,14 +42,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Function to fetch fresh user data from the server
+  const refreshUserData = async () => {
+    try {
+      const response = await authService.user();
+      if (response.status && response.data.user) {
+        setUser(response.data.user as User);
+        // Update localStorage with fresh data
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+      }
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    }
+  };
+
   useEffect(() => {
     // Check if user is already logged in
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('auth_token');
 
-    if (storedUser && token) {
-      setUser(JSON.parse(storedUser) as User);
-    }
+    const initializeAuth = async () => {
+      setIsLoading(true);
+
+      if (storedUser && token) {
+        // Set user from localStorage initially for fast loading
+        setUser(JSON.parse(storedUser) as User);
+
+        // Then fetch fresh data from the server
+        await refreshUserData();
+      }
+
+      setIsLoading(false);
+    };
+
+    initializeAuth();
 
     // Listen for auth-update events
     const handleAuthUpdate = (event: CustomEvent) => {
@@ -69,8 +96,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     window.addEventListener('storage', handleStorageChange);
 
-    setIsLoading(false);
-
     return () => {
       window.removeEventListener('auth-update', handleAuthUpdate as EventListener);
       window.removeEventListener('storage', handleStorageChange);
@@ -80,8 +105,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
+      // First login with credentials
       const response = await authService.login({ email, password });
+
+      // Set user from login response
       setUser(response.data.user as User);
+
+      // Then fetch fresh user data to ensure we have the latest profile image
+      await refreshUserData();
+
       setIsLoading(false);
       return response;
     } catch (error) {
@@ -95,6 +127,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await authService.register({ name, email, password, password_confirmation, role });
       setUser(response.data.user as User);
+
+      // Fetch fresh user data after registration
+      await refreshUserData();
+
       setIsLoading(false);
       return response;
     } catch (error) {
@@ -121,7 +157,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading,
     login,
     register,
-    logout
+    logout,
+    refreshUserData
   };
 
   // Show loading screen when authentication state is changing

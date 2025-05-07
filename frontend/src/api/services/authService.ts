@@ -98,9 +98,25 @@ const authService = {
   },
 
   // Get current authenticated user
+  user: async () => {
+    try {
+      const response = await apiClient.get('/api/user');
+
+      // Store updated user data in localStorage
+      if (response.data.status && response.data.data.user) {
+        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw error;
+    }
+  },
+
+  // Alias for backward compatibility
   getCurrentUser: async () => {
-    const response = await apiClient.get('/api/user');
-    return response.data;
+    return await authService.user();
   },
 
   // Check if user is authenticated

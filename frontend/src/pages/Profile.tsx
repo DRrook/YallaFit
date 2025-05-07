@@ -21,7 +21,7 @@ const Profile = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading, refreshUserData } = useAuth();
 
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,12 +44,17 @@ const Profile = () => {
     confirmPassword: "",
   });
 
-  // Redirect if not authenticated
+  // Redirect if not authenticated and refresh user data
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      navigate('/login');
+    if (!authLoading) {
+      if (!isAuthenticated) {
+        navigate('/login');
+      } else {
+        // Refresh user data when component mounts
+        refreshUserData();
+      }
     }
-  }, [authLoading, isAuthenticated, navigate]);
+  }, [authLoading, isAuthenticated, navigate, refreshUserData]);
 
   // Initialize profile data from user object
   useEffect(() => {

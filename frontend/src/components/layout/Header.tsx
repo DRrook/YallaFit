@@ -11,7 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu, Bell, User, LogOut } from "lucide-react";
+import { Menu, Bell, User, LogOut, LayoutDashboard } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,7 +76,16 @@ const Header = ({ isAuthenticated = false, userRole = null }: HeaderProps) => {
           </Link>
 
           {isAuthenticated ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
+              {/* Dashboard link for logged-in users */}
+              <Link
+                to="/dashboard"
+                className="text-sm font-medium text-white hover:text-yalla-green transition-colors flex items-center gap-1"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
+
               <Button variant="ghost" size="icon" className="text-white">
                 <Bell className="h-5 w-5" />
               </Button>
@@ -93,6 +102,11 @@ const Header = ({ isAuthenticated = false, userRole = null }: HeaderProps) => {
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="cursor-pointer w-full">
                       Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="cursor-pointer w-full">
+                      Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
@@ -163,6 +177,13 @@ const Header = ({ isAuthenticated = false, userRole = null }: HeaderProps) => {
                 {isAuthenticated ? (
                   <>
                     <div className="border-t border-yalla-gray my-2 pt-2"></div>
+                    <Link
+                      to="/dashboard"
+                      className="text-sm font-medium text-white hover:text-yalla-green transition-colors flex items-center"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <LayoutDashboard className="h-4 w-4 mr-2" /> Dashboard
+                    </Link>
                     <Link
                       to="/profile"
                       className="text-sm font-medium text-white hover:text-yalla-green transition-colors"

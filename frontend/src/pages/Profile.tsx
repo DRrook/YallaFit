@@ -378,9 +378,19 @@ const Profile = () => {
           </div>
           <div className="lg:col-span-3">
             <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="bg-yalla-dark-gray text-white grid w-full grid-cols-2">
-                <TabsTrigger value="profile">Profile Information</TabsTrigger>
-                <TabsTrigger value="security">Security</TabsTrigger>
+              <TabsList className="bg-yalla-dark-gray text-white grid w-full grid-cols-2 p-1">
+                <TabsTrigger
+                  value="profile"
+                  className="data-[state=active]:bg-yalla-green data-[state=active]:text-black data-[state=active]:shadow-none hover:bg-yalla-green/20 transition-colors"
+                >
+                  Profile Information
+                </TabsTrigger>
+                <TabsTrigger
+                  value="security"
+                  className="data-[state=active]:bg-yalla-green data-[state=active]:text-black data-[state=active]:shadow-none hover:bg-yalla-green/20 transition-colors"
+                >
+                  Security
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="profile" className="mt-6">
                 <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
@@ -496,7 +506,7 @@ const Profile = () => {
                       <Button
                         type="submit"
                         disabled={isLoading}
-                        className="bg-yalla-green text-black hover:bg-yalla-green/90"
+                        className="bg-yalla-green text-black hover:bg-yalla-green/90 font-medium"
                       >
                         {isLoading ? "Saving changes..." : "Save changes"}
                       </Button>
@@ -562,7 +572,7 @@ const Profile = () => {
                       <Button
                         type="submit"
                         disabled={isLoading}
-                        className="bg-yalla-green text-black hover:bg-yalla-green/90"
+                        className="bg-yalla-green text-black hover:bg-yalla-green/90 font-medium"
                       >
                         {isLoading ? "Changing password..." : "Change password"}
                       </Button>

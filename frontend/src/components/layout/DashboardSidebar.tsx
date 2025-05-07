@@ -46,7 +46,7 @@ const DashboardSidebar = () => {
       // Add other admin links
     ],
     coach: [
-      { to: "/coach/sessions", label: "My Sessions", icon: <BarChart3 className="h-4 w-4" /> },
+      { to: "/sessions", label: "My Sessions", icon: <BarChart3 className="h-4 w-4" /> },
       { to: "/coach/bookings", label: "Bookings", icon: <Bookmark className="h-4 w-4" /> },
       // Add other coach links
     ],

@@ -140,13 +140,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async () => {
+    console.log('AuthContext - Logout called');
     setIsLoading(true);
     try {
+      console.log('AuthContext - Before logout API call');
       await authService.logout();
+      console.log('AuthContext - After logout API call');
+
+      // Clear user state
       setUser(null);
+      console.log('AuthContext - User state cleared');
+
+      // Double-check localStorage is cleared
+      if (localStorage.getItem('auth_token') || localStorage.getItem('user')) {
+        console.warn('AuthContext - LocalStorage still has auth data after logout, clearing manually');
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user');
+      }
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
+      console.log('AuthContext - Logout complete, isLoading set to false');
       setIsLoading(false);
     }
   };

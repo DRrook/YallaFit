@@ -88,12 +88,22 @@ const authService = {
 
   // Logout user
   logout: async () => {
+    console.log('AuthService - Logout called');
     try {
+      console.log('AuthService - Calling API logout endpoint');
       await apiClient.post('/api/logout');
+      console.log('AuthService - API logout successful');
+    } catch (error) {
+      console.error('AuthService - API logout error:', error);
     } finally {
       // Clear local storage regardless of API response
+      console.log('AuthService - Clearing localStorage');
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
+      console.log('AuthService - LocalStorage cleared, current state:', {
+        token: localStorage.getItem('auth_token'),
+        user: localStorage.getItem('user')
+      });
     }
   },
 

@@ -39,11 +39,41 @@ const Header = ({ isAuthenticated: propIsAuthenticated = false, userRole: propUs
   const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : contextIsAuthenticated;
   const userRole = propUserRole !== undefined ? propUserRole : (user?.role as UserRole || null);
 
+  // Add console logs to debug authentication state
+  console.log('Header - Auth State:', {
+    propIsAuthenticated,
+    contextIsAuthenticated,
+    isAuthenticated,
+    user,
+    userRole,
+    localStorageToken: localStorage.getItem('auth_token'),
+    localStorageUser: localStorage.getItem('user')
+  });
+
   const handleLogout = async () => {
+    console.log('Header - handleLogout called');
     setIsLoggingOut(true);
-    await logout();
-    navigate('/login');
-    setIsLoggingOut(false);
+
+    try {
+      await logout();
+      console.log('Header - logout completed, navigating to login page');
+
+      // Force a state update to ensure the UI reflects the logged-out state
+      // This is a workaround for any potential state synchronization issues
+      setTimeout(() => {
+        console.log('Header - Checking auth state after logout');
+        console.log('LocalStorage after logout:', {
+          token: localStorage.getItem('auth_token'),
+          user: localStorage.getItem('user')
+        });
+
+        navigate('/login');
+        setIsLoggingOut(false);
+      }, 100);
+    } catch (error) {
+      console.error('Header - Error during logout:', error);
+      setIsLoggingOut(false);
+    }
   };
 
   return (

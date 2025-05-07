@@ -11,7 +11,7 @@ const ProfileImageDebug: React.FC = () => {
   useEffect(() => {
     if (user?.profile_image) {
       setImageUrl(user.profile_image);
-      const fullUrl = `http://127.0.0.1:8000${user.profile_image}`;
+      const fullUrl = `http://localhost:8000${user.profile_image}`;
       setFullImageUrl(fullUrl);
 
       // Check if image is loadable
@@ -40,6 +40,10 @@ const ProfileImageDebug: React.FC = () => {
     }
   };
 
+  const openTestPage = () => {
+    window.open('http://localhost:8000/test-images.php', '_blank');
+  };
+
   return (
     <div className="bg-black/80 text-white p-4 rounded-lg mt-4 border border-yalla-green">
       <h3 className="text-lg font-bold mb-2">Profile Image Debug</h3>
@@ -64,6 +68,13 @@ const ProfileImageDebug: React.FC = () => {
             className="bg-yalla-green text-black hover:bg-yalla-green/90"
           >
             Test Image URL
+          </Button>
+
+          <Button
+            onClick={openTestPage}
+            className="bg-yalla-green text-black hover:bg-yalla-green/90"
+          >
+            Open Test Page
           </Button>
         </div>
       </div>

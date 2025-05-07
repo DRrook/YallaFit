@@ -336,7 +336,7 @@ const Profile = () => {
                           <img
                             src={user.profile_image.startsWith('http')
                               ? user.profile_image
-                              : `http://127.0.0.1:8000${user.profile_image}`
+                              : `http://localhost:8000${user.profile_image}`
                             }
                             alt={`${profileData.firstName} ${profileData.lastName}`}
                             className="h-full w-full rounded-full object-cover"

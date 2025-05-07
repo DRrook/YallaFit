@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { UserRole } from "@/components/layout/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingScreen from "@/components/ui/loading-screen";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
 const Profile = () => {
   const location = useLocation();
@@ -164,9 +165,10 @@ const Profile = () => {
   };
 
   return (
-    <div className="container py-8 px-4 md:px-6">
-      <div className="grid gap-8 lg:grid-cols-5">
-        <div className="lg:col-span-2">
+    <DashboardLayout>
+      <div className="container py-8 px-4 md:px-6">
+        <div className="grid gap-8 lg:grid-cols-5">
+          <div className="lg:col-span-2">
           <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
             <CardHeader>
               <div className="flex flex-col items-center space-y-4">
@@ -437,7 +439,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

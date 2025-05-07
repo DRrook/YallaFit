@@ -1,8 +1,12 @@
 import axios from 'axios';
 
+// Get API URL from environment variables or use default
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+console.log('API Client initialized with base URL:', API_URL);
+
 // Create an Axios instance with default config
 const apiClient = axios.create({
-  baseURL: 'http://127.0.0.1:8000', // Use root URL without /api prefix
+  baseURL: API_URL, // Use environment variable or default
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

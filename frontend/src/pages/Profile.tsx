@@ -16,6 +16,7 @@ import { FileUpload } from "@/components/ui/file-upload";
 import userService from "@/api/services/userService";
 import { Camera } from "lucide-react";
 import { ImageCropper } from "@/components/ui/image-cropper";
+import ProfileImageDebug from "@/components/debug/ProfileImageDebug";
 
 const Profile = () => {
   const location = useLocation();
@@ -327,23 +328,30 @@ const Profile = () => {
                   <div className="relative cursor-pointer group" onClick={() => document.getElementById('profile-photo-upload')?.click()}>
                     <Avatar className="h-24 w-24 border-2 border-transparent group-hover:border-yalla-green transition-colors">
                       {user?.profile_image ? (
-                        <AvatarImage
-                          src={`${import.meta.env.VITE_API_URL || ''}${user.profile_image}`}
-                          alt={`${profileData.firstName} ${profileData.lastName}`}
-                          onError={(e) => {
-                            // If image fails to load, show fallback and log error
-                            console.error('Failed to load profile image:', user.profile_image);
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
+                        <>
+                          {/* Use direct img tag for better debugging */}
+                          <img
+                            src={user.profile_image.startsWith('http')
+                              ? user.profile_image
+                              : `${import.meta.env.VITE_API_URL || ''}${user.profile_image}`
+                            }
+                            alt={`${profileData.firstName} ${profileData.lastName}`}
+                            className="h-full w-full rounded-full object-cover"
+                            onError={(e) => {
+                              // If image fails to load, show fallback and log error
+                              console.error('Failed to load profile image:', user.profile_image);
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
 
-                            // Show toast notification
-                            toast({
-                              title: "Image load error",
-                              description: "Could not load profile image. Please try uploading again.",
-                              variant: "destructive"
-                            });
-                          }}
-                        />
+                              // Show toast notification
+                              toast({
+                                title: "Image load error",
+                                description: "Could not load profile image. Please try uploading again.",
+                                variant: "destructive"
+                              });
+                            }}
+                          />
+                        </>
                       ) : null}
                       <AvatarFallback className="text-xl bg-yalla-green text-black">
                         {getInitials()}
@@ -652,6 +660,9 @@ const Profile = () => {
                 </Card>
               </TabsContent>
             </Tabs>
+
+            {/* Debug component - remove in production */}
+            <ProfileImageDebug />
           </div>
         </div>
       </div>

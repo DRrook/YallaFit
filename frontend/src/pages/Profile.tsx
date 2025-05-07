@@ -14,6 +14,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import LoadingScreen from "@/components/ui/loading-screen";
 import { FileUpload } from "@/components/ui/file-upload";
 import userService from "@/api/services/userService";
+import { Camera } from "lucide-react";
+import { ImageCropper } from "@/components/ui/image-cropper";
 
 const Profile = () => {
   const location = useLocation();
@@ -25,6 +27,8 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
 
   // Profile fields
   const [profileData, setProfileData] = useState({
@@ -182,16 +186,57 @@ const Profile = () => {
     return `${profileData.firstName.charAt(0)}${profileData.lastName.charAt(0)}`;
   };
 
+  // Handle crop complete
+  const handleCropComplete = (croppedBlob: Blob) => {
+    // Create a File from the Blob
+    const croppedFile = new File([croppedBlob], 'profile-photo.jpg', { type: 'image/jpeg' });
+
+    // Set the profile image
+    setProfileImage(croppedFile);
+
+    // Close cropper
+    setShowCropper(false);
+    setTempImageUrl(null);
+
+    // Create a preview URL for immediate visual feedback
+    const previewUrl = URL.createObjectURL(croppedBlob);
+
+    // Update the user object in state to show the preview immediately
+    if (user) {
+      const updatedUser = { ...user, profile_image: previewUrl };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      // Force a re-render by updating the user in localStorage
+      // In a real app, you would update the user context instead
+      window.dispatchEvent(new Event('storage'));
+    }
+  };
+
+  // Handle crop cancel
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setTempImageUrl(null);
+  };
+
   return (
     <>
+      {/* Image Cropper Dialog */}
+      {tempImageUrl && (
+        <ImageCropper
+          image={tempImageUrl}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={1}
+          open={showCropper}
+        />
+      )}
       <div className="container py-8 px-4 md:px-6">
         <div className="grid gap-8 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
               <CardHeader>
                 <div className="flex flex-col items-center space-y-4">
-                  <div className="relative">
-                    <Avatar className="h-24 w-24">
+                  <div className="relative cursor-pointer group" onClick={() => document.getElementById('profile-photo-upload')?.click()}>
+                    <Avatar className="h-24 w-24 border-2 border-transparent group-hover:border-yalla-green transition-colors">
                       {user?.profile_image ? (
                         <AvatarImage src={user.profile_image} alt={`${profileData.firstName} ${profileData.lastName}`} />
                       ) : null}
@@ -199,12 +244,46 @@ const Profile = () => {
                         {getInitials()}
                       </AvatarFallback>
                     </Avatar>
+
+                    {/* Overlay with camera icon on hover */}
+                    <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                      <Camera className="h-8 w-8 text-white" />
+                    </div>
+
+                    {/* Hidden file input */}
+                    <input
+                      type="file"
+                      id="profile-photo-upload"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 2 * 1024 * 1024) {
+                            toast({
+                              title: "File too large",
+                              description: "Image must be less than 2MB",
+                              variant: "destructive"
+                            });
+                            return;
+                          }
+                          setProfileImage(file);
+
+                          // Create object URL for preview
+                          const objectUrl = URL.createObjectURL(file);
+                          // Show cropper
+                          setTempImageUrl(objectUrl);
+                          setShowCropper(true);
+                        }
+                      }}
+                    />
                   </div>
                   <div className="text-center">
                     <CardTitle className="text-xl">{`${profileData.firstName} ${profileData.lastName}`}</CardTitle>
                     <CardDescription className="text-gray-400">
                       {userRole === "coach" ? "Fitness Coach" : `Member since ${new Date(user?.created_at || Date.now()).getFullYear()}`}
                     </CardDescription>
+                    <p className="text-xs text-gray-400 mt-1">Click on photo to change</p>
                   </div>
                 </div>
               </CardHeader>
@@ -347,24 +426,7 @@ const Profile = () => {
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="profile_image" className="text-white">
-                          Profile Photo
-                        </Label>
-                        <div className="flex justify-center">
-                          <FileUpload
-                            onChange={setProfileImage}
-                            value={profileImage}
-                            previewUrl={user?.profile_image}
-                            accept="image/*"
-                            maxSize={2}
-                            circular={true}
-                          />
-                        </div>
-                        <p className="text-xs text-gray-400 text-center mt-2">
-                          Click on the image to upload a new photo. You can crop and position your photo.
-                        </p>
-                      </div>
+
 
                       {userRole === "coach" && (
                         <>

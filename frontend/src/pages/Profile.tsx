@@ -1,7 +1,6 @@
 
-import { useState } from "react";
-import Layout from "@/components/layout/Layout";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,46 +10,116 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { UserRole } from "@/components/layout/Header";
+import { useAuth } from "@/contexts/AuthContext";
+import LoadingScreen from "@/components/ui/loading-screen";
 
 const Profile = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
-  
-  // In a real app, this would come from authentication
-  const [userRole, setUserRole] = useState<UserRole>("client");
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+
+  const [userRole, setUserRole] = useState<UserRole>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [pageLoading, setPageLoading] = useState(true);
+
   // Profile fields
   const [profileData, setProfileData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    bio: "Fitness enthusiast looking to improve my strength and endurance.",
-    specialization: userRole === "coach" ? "HIIT, Strength Training" : "",
-    experience: userRole === "coach" ? "5 years" : "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    bio: "",
+    specialization: "",
+    experience: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigate('/login');
+    }
+  }, [authLoading, isAuthenticated, navigate]);
+
+  // Initialize profile data from user object
+  useEffect(() => {
+    if (user) {
+      // Set user role
+      setUserRole(user.role);
+
+      // Split name into first and last name
+      const nameParts = user.name.split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      setProfileData({
+        firstName,
+        lastName,
+        email: user.email || '',
+        phone: user.phone || '',
+        bio: user.bio || '',
+        specialization: user.role === 'coach' ? (user.specialization || '') : '',
+        experience: user.role === 'coach' ? (user.experience || '') : '',
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+
+      setPageLoading(false);
+    }
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleProfileUpdate = (e: React.FormEvent) => {
+  const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate profile update
-    setTimeout(() => {
+    try {
+      // In a real implementation, you would call an API endpoint to update the user profile
+      // For now, we'll simulate a successful update
+
+      // Construct the full name from first and last name
+      const fullName = `${profileData.firstName} ${profileData.lastName}`.trim();
+
+      // Create updated user object
+      const updatedUserData = {
+        ...user,
+        name: fullName,
+        email: profileData.email,
+        phone: profileData.phone,
+        bio: profileData.bio,
+        ...(userRole === 'coach' && {
+          specialization: profileData.specialization,
+          experience: profileData.experience
+        })
+      };
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Update local storage to reflect changes (in a real app, this would come from the API)
+      localStorage.setItem('user', JSON.stringify(updatedUserData));
+
       setIsLoading(false);
       toast({
         title: "Profile updated",
         description: "Your profile information has been updated successfully.",
       });
-    }, 1000);
+    } catch (error) {
+      setIsLoading(false);
+      toast({
+        title: "Update failed",
+        description: "There was an error updating your profile. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handlePasswordChange = (e: React.FormEvent) => {
@@ -84,26 +153,39 @@ const Profile = () => {
     }, 1000);
   };
 
+  // Show loading screen while fetching user data
+  if (pageLoading || authLoading) {
+    return <LoadingScreen message="Loading profile..." />;
+  }
+
+  // Get initials for avatar fallback
+  const getInitials = () => {
+    return `${profileData.firstName.charAt(0)}${profileData.lastName.charAt(0)}`;
+  };
+
   return (
-    <Layout isAuthenticated={true} userRole={userRole}>
-      <div className="container py-8 px-4 md:px-6">
-        <div className="grid gap-8 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
-              <CardHeader>
-                <div className="flex flex-col items-center space-y-4">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src="https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" />
-                    <AvatarFallback className="text-xl bg-yalla-green text-black">JD</AvatarFallback>
-                  </Avatar>
-                  <div className="text-center">
-                    <CardTitle className="text-xl">John Doe</CardTitle>
-                    <CardDescription className="text-gray-400">
-                      {userRole === "coach" ? "Fitness Coach" : "Member since 2023"}
-                    </CardDescription>
-                  </div>
+    <div className="container py-8 px-4 md:px-6">
+      <div className="grid gap-8 lg:grid-cols-5">
+        <div className="lg:col-span-2">
+          <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
+            <CardHeader>
+              <div className="flex flex-col items-center space-y-4">
+                <Avatar className="h-24 w-24">
+                  {user?.profile_image ? (
+                    <AvatarImage src={user.profile_image} />
+                  ) : null}
+                  <AvatarFallback className="text-xl bg-yalla-green text-black">
+                    {getInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="text-center">
+                  <CardTitle className="text-xl">{`${profileData.firstName} ${profileData.lastName}`}</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    {userRole === "coach" ? "Fitness Coach" : `Member since ${new Date(user?.created_at || Date.now()).getFullYear()}`}
+                  </CardDescription>
                 </div>
-              </CardHeader>
+              </div>
+            </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
@@ -355,7 +437,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 

@@ -190,14 +190,16 @@ const Profile = () => {
             <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
               <CardHeader>
                 <div className="flex flex-col items-center space-y-4">
-                  <Avatar className="h-24 w-24">
-                    {user?.profile_image ? (
-                      <AvatarImage src={user.profile_image} />
-                    ) : null}
-                    <AvatarFallback className="text-xl bg-yalla-green text-black">
-                      {getInitials()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="relative">
+                    <Avatar className="h-24 w-24">
+                      {user?.profile_image ? (
+                        <AvatarImage src={user.profile_image} alt={`${profileData.firstName} ${profileData.lastName}`} />
+                      ) : null}
+                      <AvatarFallback className="text-xl bg-yalla-green text-black">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
                   <div className="text-center">
                     <CardTitle className="text-xl">{`${profileData.firstName} ${profileData.lastName}`}</CardTitle>
                     <CardDescription className="text-gray-400">
@@ -349,13 +351,19 @@ const Profile = () => {
                         <Label htmlFor="profile_image" className="text-white">
                           Profile Photo
                         </Label>
-                        <FileUpload
-                          onChange={setProfileImage}
-                          value={profileImage}
-                          previewUrl={user?.profile_image}
-                          accept="image/*"
-                          maxSize={2}
-                        />
+                        <div className="flex justify-center">
+                          <FileUpload
+                            onChange={setProfileImage}
+                            value={profileImage}
+                            previewUrl={user?.profile_image}
+                            accept="image/*"
+                            maxSize={2}
+                            circular={true}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-400 text-center mt-2">
+                          Click on the image to upload a new photo. You can crop and position your photo.
+                        </p>
                       </div>
 
                       {userRole === "coach" && (

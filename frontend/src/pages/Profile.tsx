@@ -110,8 +110,22 @@ const Profile = () => {
         ...(uploadedImage ? { profile_image: uploadedImage } : profileImage ? { profile_image: profileImage } : {})
       };
 
+      // Log the update data for debugging
+      console.log('Updating profile with data:', {
+        ...updateData,
+        profile_image: updateData.profile_image ? 'File object present' : 'No file'
+      });
+
       // Call the API to update the profile
       const response = await userService.updateProfile(updateData);
+
+      // Log the response for debugging
+      console.log('Profile update response:', {
+        status: response.status,
+        message: response.message,
+        hasUser: !!response.data?.user,
+        profileImage: response.data?.user?.profile_image
+      });
 
       // Update the auth context with the new user data
       if (response.status && response.data.user) {
@@ -134,17 +148,32 @@ const Profile = () => {
       }
 
       setIsLoading(false);
-      toast({
-        title: "Profile updated",
-        description: "Your profile information has been updated successfully.",
-      });
+
+      // Only show toast for form submissions
+      if (e) {
+        toast({
+          title: "Profile updated",
+          description: "Your profile information has been updated successfully.",
+        });
+      }
+
+      // Return the response for promise chaining
+      return response;
     } catch (error: any) {
+      console.error('Profile update error:', error);
       setIsLoading(false);
-      toast({
-        title: "Update failed",
-        description: error.response?.data?.message || "There was an error updating your profile. Please try again.",
-        variant: "destructive"
-      });
+
+      // Only show toast for form submissions
+      if (e) {
+        toast({
+          title: "Update failed",
+          description: error.response?.data?.message || "There was an error updating your profile. Please try again.",
+          variant: "destructive"
+        });
+      }
+
+      // Re-throw the error for promise chaining
+      throw error;
     }
   };
 
@@ -219,26 +248,55 @@ const Profile = () => {
     // Create a preview URL for immediate visual feedback
     const previewUrl = URL.createObjectURL(croppedBlob);
 
+    // Show a loading toast
+    const loadingToast = toast({
+      title: "Uploading profile photo",
+      description: "Please wait while we upload your photo...",
+    });
+
+    // Immediately save the profile to the server
+    handleProfileUpdate(null, croppedFile)
+      .then((response) => {
+        // If successful, update the user object with the server-provided image path
+        if (response?.status && response?.data?.user?.profile_image) {
+          // Clear the loading toast
+          toast.dismiss(loadingToast);
+
+          // Show success toast
+          toast({
+            title: "Profile photo updated",
+            description: "Your profile photo has been updated successfully.",
+          });
+
+          // Force a refresh of user data to get the correct image URL
+          refreshUserData();
+        }
+      })
+      .catch((error) => {
+        // Clear the loading toast
+        toast.dismiss(loadingToast);
+
+        // Show error toast
+        toast({
+          title: "Upload failed",
+          description: "There was an error uploading your profile photo. Please try again.",
+          variant: "destructive"
+        });
+
+        console.error("Error uploading profile photo:", error);
+      });
+
     // Update the user object in state to show the preview immediately
     if (user) {
-      // Create a new user object with the updated profile image
+      // Create a new user object with the updated profile image (temporary preview)
       const updatedUser = { ...user, profile_image: previewUrl };
 
-      // Update localStorage
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-
-      // Update the auth context
+      // Update the auth context with the temporary preview
       if (typeof window !== 'undefined') {
         // Force a re-render by updating the user in the auth context
         const authEvent = new CustomEvent('auth-update', { detail: updatedUser });
         window.dispatchEvent(authEvent);
-
-        // Also trigger a storage event for components listening to localStorage changes
-        window.dispatchEvent(new Event('storage'));
       }
-
-      // Immediately save the profile to the server
-      handleProfileUpdate(null, croppedFile);
     }
   };
 
@@ -270,12 +328,20 @@ const Profile = () => {
                     <Avatar className="h-24 w-24 border-2 border-transparent group-hover:border-yalla-green transition-colors">
                       {user?.profile_image ? (
                         <AvatarImage
-                          src={user.profile_image}
+                          src={`${import.meta.env.VITE_API_URL || ''}${user.profile_image}`}
                           alt={`${profileData.firstName} ${profileData.lastName}`}
                           onError={(e) => {
-                            // If image fails to load, show fallback
+                            // If image fails to load, show fallback and log error
+                            console.error('Failed to load profile image:', user.profile_image);
                             const target = e.target as HTMLImageElement;
                             target.style.display = 'none';
+
+                            // Show toast notification
+                            toast({
+                              title: "Image load error",
+                              description: "Could not load profile image. Please try uploading again.",
+                              variant: "destructive"
+                            });
                           }}
                         />
                       ) : null}

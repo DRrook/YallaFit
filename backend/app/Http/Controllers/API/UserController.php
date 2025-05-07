@@ -41,7 +41,7 @@ class UserController extends Controller
 
         try {
             $data = $request->only(['name', 'email', 'bio', 'phone', 'specialization', 'experience']);
-            
+
             // Handle profile image upload
             if ($request->hasFile('profile_image')) {
                 // Delete old image if exists
@@ -52,14 +52,21 @@ class UserController extends Controller
                         Storage::disk('public')->delete($oldImagePath);
                     }
                 }
-                
+
                 // Store the new image
                 $imagePath = $request->file('profile_image')->store('profile-images', 'public');
                 $data['profile_image'] = '/storage/' . $imagePath;
+
+                // Log the image path for debugging
+                \Log::info('Profile image saved', [
+                    'user_id' => $user->id,
+                    'image_path' => $data['profile_image'],
+                    'full_url' => url($data['profile_image'])
+                ]);
             }
-            
+
             $user->update($data);
-            
+
             return response()->json([
                 'status' => true,
                 'message' => 'Profile updated successfully',
@@ -103,7 +110,7 @@ class UserController extends Controller
             $user->update([
                 'password' => bcrypt($request->password)
             ]);
-            
+
             return response()->json([
                 'status' => true,
                 'message' => 'Password updated successfully'

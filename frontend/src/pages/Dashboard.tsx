@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import Layout from "@/components/layout/Layout";
 import ClientDashboard from "./dashboard/ClientDashboard";
 import CoachDashboard from "./dashboard/CoachDashboard";
 import AdminDashboard from "./dashboard/AdminDashboard";
@@ -25,11 +24,11 @@ const Dashboard = () => {
   }, [location, user]);
 
   return (
-    <Layout isAuthenticated={true} userRole={userRole}>
+    <>
       {userRole === "client" && <ClientDashboard />}
       {userRole === "coach" && <CoachDashboard />}
       {userRole === "admin" && <AdminDashboard />}
-    </Layout>
+    </>
   );
 };
 

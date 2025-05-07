@@ -1,6 +1,7 @@
 import { ReactNode, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import LoadingScreen from '@/components/ui/loading-screen';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -11,9 +12,9 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
 
-  // If authentication is still loading, show nothing or a loading spinner
+  // If authentication is still loading, show the loading screen
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingScreen />;
   }
 
   // If not authenticated, redirect to login

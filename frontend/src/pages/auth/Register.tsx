@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,11 +12,23 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const Register = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [role, setRole] = useState<"client" | "coach">("client");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    // Check if role parameter exists in URL
+    const params = new URLSearchParams(location.search);
+    const roleParam = params.get('role');
+
+    // If role parameter is 'coach', set the role state to 'coach'
+    if (roleParam === 'coach') {
+      setRole('coach');
+    }
+  }, [location]);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -56,7 +68,8 @@ const Register = () => {
         name,
         formData.email,
         formData.password,
-        formData.confirmPassword
+        formData.confirmPassword,
+        role
       );
 
       if (response.status) {
@@ -191,7 +204,7 @@ const Register = () => {
               <div className="space-y-3">
                 <Label className="text-white">I am registering as:</Label>
                 <RadioGroup
-                  defaultValue="client"
+                  value={role}
                   className="flex gap-4"
                   onValueChange={(value) => setRole(value as "client" | "coach")}
                 >

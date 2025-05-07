@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import authService from '../api/services/authService';
+import { type UserRole } from '../components/layout/Header'; // Import UserRole
+import LoadingScreen from '../components/ui/loading-screen';
 
 interface User {
   id: number;
   name: string;
   email: string;
-  role: string;
+  role: UserRole; // Use UserRole type
   profile_image?: string;
   bio?: string;
   fitness_level?: string;
@@ -17,7 +19,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<any>;
-  register: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<any>;
+  register: (name: string, email: string, password: string, passwordConfirmation: string, role?: UserRole) => Promise<any>;
   logout: () => Promise<void>;
 }
 
@@ -43,11 +45,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check if user is already logged in
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('auth_token');
-    
+
     if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
+      setUser(JSON.parse(storedUser) as User);
     }
-    
+
     setIsLoading(false);
   }, []);
 
@@ -55,7 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await authService.login({ email, password });
-      setUser(response.data.user);
+      setUser(response.data.user as User);
       setIsLoading(false);
       return response;
     } catch (error) {
@@ -64,11 +66,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (name: string, email: string, password: string, password_confirmation: string) => {
+  const register = async (name: string, email: string, password: string, password_confirmation: string, role?: UserRole) => {
     setIsLoading(true);
     try {
-      const response = await authService.register({ name, email, password, password_confirmation });
-      setUser(response.data.user);
+      const response = await authService.register({ name, email, password, password_confirmation, role });
+      setUser(response.data.user as User);
       setIsLoading(false);
       return response;
     } catch (error) {
@@ -97,6 +99,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout
   };
+
+  // Show loading screen when authentication state is changing
+  if (isLoading) {
+    return <LoadingScreen message={user ? "Logging out..." : "Loading..."} />;
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -21,6 +21,9 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 
+// Layouts
+import DashboardLayout from "@/components/layout/DashboardLayout";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -38,17 +41,18 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
-            {/* Dashboard Routes - Protected */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
+            {/* Dashboard Routes - Protected by DashboardLayout */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
+              {/* You can add more routes here that should use DashboardLayout */}
+            </Route>
 
             {/* Error Pages */}
             <Route path="/access-denied" element={<AccessDenied />} />

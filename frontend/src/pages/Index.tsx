@@ -75,7 +75,7 @@ const Index = () => {
                 methods.
               </p>
             </div>
-            
+
             <div className="bg-yalla-dark-gray p-8 rounded-lg border border-yalla-gray hover-scale">
               <div className="w-12 h-12 bg-yalla-green/20 rounded-lg flex items-center justify-center mb-4">
                 <svg
@@ -98,7 +98,7 @@ const Index = () => {
                 Book sessions that fit your schedule, with easy rescheduling options when needed.
               </p>
             </div>
-            
+
             <div className="bg-yalla-dark-gray p-8 rounded-lg border border-yalla-gray hover-scale">
               <div className="w-12 h-12 bg-yalla-green/20 rounded-lg flex items-center justify-center mb-4">
                 <svg
@@ -159,7 +159,7 @@ const Index = () => {
                 )}
               </ul>
               <Button asChild className="bg-yalla-green text-black hover:bg-yalla-green/90 text-lg py-6 px-8">
-                <Link to="/register">Become a Coach</Link>
+                <Link to="/register?role=coach">Become a Coach</Link>
               </Button>
             </div>
             <div className="md:w-1/2">

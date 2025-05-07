@@ -5,7 +5,7 @@ const ClientDashboard = () => {
   return (
     <div className="container py-8 px-4 md:px-6">
       <h1 className="text-3xl font-bold mb-8 text-white">Client Dashboard</h1>
-      
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader className="pb-2">
@@ -17,7 +17,7 @@ const ClientDashboard = () => {
             <p className="text-sm text-gray-400">This week</p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader className="pb-2">
             <CardTitle className="text-yalla-green">Completed Sessions</CardTitle>
@@ -28,7 +28,7 @@ const ClientDashboard = () => {
             <p className="text-sm text-gray-400">+2 this week</p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader className="pb-2">
             <CardTitle className="text-yalla-green">Active Goals</CardTitle>
@@ -39,7 +39,7 @@ const ClientDashboard = () => {
             <p className="text-sm text-gray-400">In progress</p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader className="pb-2">
             <CardTitle className="text-yalla-green">Orders</CardTitle>
@@ -51,7 +51,7 @@ const ClientDashboard = () => {
           </CardContent>
         </Card>
       </div>
-      
+
       <div className="grid gap-6 mt-8 md:grid-cols-2">
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader>
@@ -69,7 +69,7 @@ const ClientDashboard = () => {
                   Confirmed
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-black/40 rounded-md">
                 <div>
                   <p className="font-semibold">Yoga Flow with Michael</p>
@@ -79,7 +79,7 @@ const ClientDashboard = () => {
                   Confirmed
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-black/40 rounded-md">
                 <div>
                   <p className="font-semibold">Strength Training with Alex</p>
@@ -92,7 +92,7 @@ const ClientDashboard = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader>
             <CardTitle>Recommended Sessions</CardTitle>
@@ -109,7 +109,7 @@ const ClientDashboard = () => {
                   Book Now
                 </button>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-black/40 rounded-md">
                 <div>
                   <p className="font-semibold">Advanced Pilates</p>
@@ -119,7 +119,7 @@ const ClientDashboard = () => {
                   Book Now
                 </button>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-black/40 rounded-md">
                 <div>
                   <p className="font-semibold">Nutrition Workshop</p>

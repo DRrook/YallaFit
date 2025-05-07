@@ -20,6 +20,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 // Dashboard Pages
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
+import Sessions from "./pages/Sessions";
 
 // Layouts
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -51,6 +52,7 @@ const App = () => (
             >
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/sessions" element={<Sessions />} />
               {/* You can add more routes here that should use DashboardLayout */}
             </Route>
 

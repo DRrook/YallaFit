@@ -10,12 +10,12 @@ const CoachDashboard = () => {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-white">Coach Dashboard</h1>
         <Button asChild className="bg-yalla-green text-black hover:bg-yalla-green/90">
-          <Link to="/coach/sessions/create">
+          <Link to="/sessions">
             <Plus className="mr-2 h-4 w-4" /> Create Session
           </Link>
         </Button>
       </div>
-      
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader className="pb-2">
@@ -27,7 +27,7 @@ const CoachDashboard = () => {
             <p className="text-sm text-gray-400">+2 this week</p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader className="pb-2">
             <CardTitle className="text-yalla-green">Upcoming Bookings</CardTitle>
@@ -38,7 +38,7 @@ const CoachDashboard = () => {
             <p className="text-sm text-gray-400">3 today</p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader className="pb-2">
             <CardTitle className="text-yalla-green">Earnings</CardTitle>
@@ -49,7 +49,7 @@ const CoachDashboard = () => {
             <p className="text-sm text-gray-400">+15% from last month</p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader className="pb-2">
             <CardTitle className="text-yalla-green">Reviews</CardTitle>
@@ -61,7 +61,7 @@ const CoachDashboard = () => {
           </CardContent>
         </Card>
       </div>
-      
+
       <div className="grid gap-6 mt-8 md:grid-cols-2">
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader>
@@ -79,7 +79,7 @@ const CoachDashboard = () => {
                   In 2 hours
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-black/40 rounded-md">
                 <div>
                   <p className="font-semibold">Personal Training - John</p>
@@ -89,7 +89,7 @@ const CoachDashboard = () => {
                   In 5 hours
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-black/40 rounded-md">
                 <div>
                   <p className="font-semibold">Evening Yoga Flow</p>
@@ -102,7 +102,7 @@ const CoachDashboard = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-yalla-dark-gray text-white border-yalla-gray">
           <CardHeader>
             <CardTitle>Recent Bookings</CardTitle>
@@ -122,7 +122,7 @@ const CoachDashboard = () => {
                 </div>
                 <div className="text-gray-400 text-xs">10 min ago</div>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-black/40 rounded-md">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
@@ -135,7 +135,7 @@ const CoachDashboard = () => {
                 </div>
                 <div className="text-gray-400 text-xs">1 hour ago</div>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-black/40 rounded-md">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">

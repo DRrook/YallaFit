@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext"; // To get userRole
-import { Home, Users, Bookmark, BarChart3, Settings, UserCircle } from "lucide-react"; // Example icons
+import { Home, Users, Bookmark, BarChart3, Settings, UserCircle, Search } from "lucide-react"; // Example icons
 import { cn } from "@/lib/utils";
 
 interface NavLinkProps {
@@ -33,6 +33,8 @@ const DashboardSidebar = () => {
   const { user } = useAuth(); // Assuming user object contains role
   const userRole = user?.role;
 
+  console.log('DashboardSidebar - User Role:', userRole);
+
   // Define navigation items based on role
   const commonLinks = [
     { to: "/dashboard", label: "Dashboard", icon: <Home className="h-4 w-4" /> },
@@ -51,7 +53,7 @@ const DashboardSidebar = () => {
       // Add other coach links
     ],
     client: [
-      { to: "/client/sessions", label: "Find Sessions", icon: <BarChart3 className="h-4 w-4" /> },
+      { to: "/client/sessions", label: "Find Sessions", icon: <Search className="h-4 w-4" /> },
       { to: "/bookings", label: "My Bookings", icon: <Bookmark className="h-4 w-4" /> },
       // Add other client links
     ],

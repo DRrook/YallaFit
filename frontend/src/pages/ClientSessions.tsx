@@ -42,6 +42,9 @@ const ClientSessions = () => {
   useEffect(() => {
     fetchSessions();
     fetchSavedSessions();
+
+    // Debug user role
+    console.log('ClientSessions - User:', user);
   }, []);
 
   useEffect(() => {
@@ -117,13 +120,13 @@ const ClientSessions = () => {
     if (dateFilter) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      
+
       const nextWeek = new Date(today);
       nextWeek.setDate(nextWeek.getDate() + 7);
-      
+
       const nextMonth = new Date(today);
       nextMonth.setMonth(nextMonth.getMonth() + 1);
 
@@ -189,7 +192,7 @@ const ClientSessions = () => {
 
   const handleBookSession = async () => {
     if (!bookingSession) return;
-    
+
     setIsBooking(true);
     try {
       const response = await clientSessionService.bookSession(bookingSession.id);
@@ -222,6 +225,17 @@ const ClientSessions = () => {
 
   if (isLoading) {
     return <LoadingScreen />;
+  }
+
+  // Check if user is a client
+  if (user?.role !== 'client' && user?.role !== undefined) {
+    return (
+      <div className="container mx-auto p-6 text-center">
+        <h1 className="text-2xl font-bold mb-6 text-white">Access Denied</h1>
+        <p className="text-gray-400">This page is only available to client users.</p>
+        <p className="text-gray-400 mt-2">Your current role: {user?.role || 'Unknown'}</p>
+      </div>
+    );
   }
 
   return (

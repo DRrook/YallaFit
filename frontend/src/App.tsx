@@ -26,6 +26,7 @@ import ClientSessions from "./pages/ClientSessions";
 import FindSessions from "./pages/FindSessions";
 import TestPage from "./pages/TestPage";
 import SimpleClientSessions from "./pages/SimpleClientSessions";
+import BasicClientSessions from "./pages/BasicClientSessions";
 
 // Layouts
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -65,12 +66,12 @@ const App = () => (
             {/* Simple test routes */}
             <Route path="/test" element={<TestPage />} />
 
-            {/* Client Sessions Route - Simple version */}
+            {/* Client Sessions Route - Basic version with minimal dependencies */}
             <Route
               path="/client/sessions"
               element={
                 <ProtectedRoute>
-                  <SimpleClientSessions />
+                  <BasicClientSessions />
                 </ProtectedRoute>
               }
             />

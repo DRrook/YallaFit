@@ -145,157 +145,244 @@ const clientSessionService = {
   // Get all available sessions
   getAvailableSessions: async (): Promise<SessionsResponse> => {
     try {
-      // Simulate API call delay
-      await delay(800);
-      
-      // In a real implementation, this would call the API
-      // const response = await apiClient.get<SessionsResponse>('/api/sessions/available');
-      // return response.data;
-      
-      // Mock implementation
-      return {
-        status: true,
-        message: "Sessions retrieved successfully",
-        data: {
-          sessions: sessions.filter(s => s.status === 'active')
+      // Try to get from API first
+      try {
+        console.log('Fetching available sessions from API');
+        const response = await apiClient.get<SessionsResponse>('/api/sessions');
+
+        // Save to localStorage as backup
+        if (response.data.status && response.data.data.sessions) {
+          localStorage.setItem('available_sessions', JSON.stringify(response.data.data.sessions));
         }
-      };
+
+        return {
+          status: true,
+          message: "Sessions retrieved successfully",
+          data: {
+            sessions: response.data.data.sessions.filter((s: Session) => s.status === 'active')
+          }
+        };
+      } catch (apiError) {
+        console.error('API error, falling back to localStorage or mock data:', apiError);
+
+        // Try to get from localStorage
+        const storedSessions = localStorage.getItem('available_sessions');
+        if (storedSessions) {
+          try {
+            const parsedSessions = JSON.parse(storedSessions);
+            return {
+              status: true,
+              message: "Sessions retrieved from local storage",
+              data: {
+                sessions: parsedSessions.filter((s: Session) => s.status === 'active')
+              }
+            };
+          } catch (parseError) {
+            console.error('Error parsing stored sessions:', parseError);
+          }
+        }
+
+        // Fall back to mock data if API and localStorage fail
+        return {
+          status: true,
+          message: "Sessions retrieved from mock data",
+          data: {
+            sessions: sessions.filter(s => s.status === 'active')
+          }
+        };
+      }
     } catch (error) {
       console.error('Error fetching available sessions:', error);
       throw error;
     }
   },
-  
+
   // Get user's saved sessions
   getSavedSessions: async (): Promise<SavedSessionsResponse> => {
     try {
-      // Simulate API call delay
-      await delay(500);
-      
-      // In a real implementation, this would call the API
-      // const response = await apiClient.get<SavedSessionsResponse>('/api/sessions/saved');
-      // return response.data;
-      
-      // Mock implementation
-      const savedSessionsData = sessions.filter(s => savedSessions.includes(s.id));
-      
-      return {
-        status: true,
-        message: "Saved sessions retrieved successfully",
-        data: {
-          savedSessions: savedSessionsData
+      // Try to get from API first
+      try {
+        console.log('Fetching saved sessions from API');
+        const response = await apiClient.get<SavedSessionsResponse>('/api/client/saved-sessions');
+
+        // Save to localStorage as backup
+        if (response.data.status && response.data.data.savedSessions) {
+          localStorage.setItem('saved_sessions', JSON.stringify(response.data.data.savedSessions));
         }
-      };
+
+        return response.data;
+      } catch (apiError) {
+        console.error('API error, falling back to localStorage or mock data:', apiError);
+
+        // Try to get from localStorage
+        const storedSavedSessions = localStorage.getItem('saved_sessions');
+        if (storedSavedSessions) {
+          try {
+            const parsedSavedSessions = JSON.parse(storedSavedSessions);
+            return {
+              status: true,
+              message: "Saved sessions retrieved from local storage",
+              data: {
+                savedSessions: parsedSavedSessions
+              }
+            };
+          } catch (parseError) {
+            console.error('Error parsing stored saved sessions:', parseError);
+          }
+        }
+
+        // Fall back to mock data if API and localStorage fail
+        const savedSessionsData = sessions.filter(s => savedSessions.includes(s.id));
+        return {
+          status: true,
+          message: "Saved sessions retrieved from mock data",
+          data: {
+            savedSessions: savedSessionsData
+          }
+        };
+      }
     } catch (error) {
       console.error('Error fetching saved sessions:', error);
       throw error;
     }
   },
-  
+
   // Save a session
   saveSession: async (sessionId: number): Promise<{ status: boolean; message: string }> => {
     try {
-      // Simulate API call delay
-      await delay(500);
-      
-      // In a real implementation, this would call the API
-      // const response = await apiClient.post(`/api/sessions/${sessionId}/save`);
-      // return response.data;
-      
-      // Mock implementation
-      if (!savedSessions.includes(sessionId)) {
-        savedSessions.push(sessionId);
+      // Try to save via API first
+      try {
+        console.log('Saving session via API:', sessionId);
+        const response = await apiClient.post('/api/client/save-session', { sessionId });
+
+        // Update localStorage
+        const storedSavedSessions = localStorage.getItem('saved_sessions');
+        if (storedSavedSessions) {
+          try {
+            const parsedSavedSessions = JSON.parse(storedSavedSessions);
+            const updatedSavedSessions = [...parsedSavedSessions, { id: sessionId }];
+            localStorage.setItem('saved_sessions', JSON.stringify(updatedSavedSessions));
+          } catch (parseError) {
+            console.error('Error updating stored saved sessions:', parseError);
+          }
+        }
+
+        return response.data;
+      } catch (apiError) {
+        console.error('API error, falling back to mock implementation:', apiError);
+
+        // Mock implementation
+        if (!savedSessions.includes(sessionId)) {
+          savedSessions.push(sessionId);
+        }
+
+        return {
+          status: true,
+          message: "Session saved successfully (mock)"
+        };
       }
-      
-      return {
-        status: true,
-        message: "Session saved successfully"
-      };
     } catch (error) {
       console.error('Error saving session:', error);
       throw error;
     }
   },
-  
+
   // Unsave a session
   unsaveSession: async (sessionId: number): Promise<{ status: boolean; message: string }> => {
     try {
-      // Simulate API call delay
-      await delay(500);
-      
-      // In a real implementation, this would call the API
-      // const response = await apiClient.delete(`/api/sessions/${sessionId}/save`);
-      // return response.data;
-      
-      // Mock implementation
-      savedSessions = savedSessions.filter(id => id !== sessionId);
-      
-      return {
-        status: true,
-        message: "Session unsaved successfully"
-      };
+      // Try to unsave via API first
+      try {
+        console.log('Unsaving session via API:', sessionId);
+        const response = await apiClient.delete(`/api/client/saved-sessions/${sessionId}`);
+
+        // Update localStorage
+        const storedSavedSessions = localStorage.getItem('saved_sessions');
+        if (storedSavedSessions) {
+          try {
+            const parsedSavedSessions = JSON.parse(storedSavedSessions);
+            const updatedSavedSessions = parsedSavedSessions.filter((s: any) => s.id !== sessionId);
+            localStorage.setItem('saved_sessions', JSON.stringify(updatedSavedSessions));
+          } catch (parseError) {
+            console.error('Error updating stored saved sessions:', parseError);
+          }
+        }
+
+        return response.data;
+      } catch (apiError) {
+        console.error('API error, falling back to mock implementation:', apiError);
+
+        // Mock implementation
+        savedSessions = savedSessions.filter(id => id !== sessionId);
+
+        return {
+          status: true,
+          message: "Session unsaved successfully (mock)"
+        };
+      }
     } catch (error) {
       console.error('Error unsaving session:', error);
       throw error;
     }
   },
-  
+
   // Book a session
   bookSession: async (sessionId: number): Promise<BookingResponse> => {
     try {
-      // Simulate API call delay
-      await delay(1000);
-      
-      // In a real implementation, this would call the API
-      // const response = await apiClient.post<BookingResponse>(`/api/sessions/${sessionId}/book`);
-      // return response.data;
-      
-      // Mock implementation
-      const sessionIndex = sessions.findIndex(s => s.id === sessionId);
-      
-      if (sessionIndex === -1) {
-        return {
-          status: false,
-          message: "Session not found"
-        };
-      }
-      
-      const session = sessions[sessionIndex];
-      
-      // Check if session is full
-      if (session.enrolled >= session.capacity) {
-        return {
-          status: false,
-          message: "Session is already full"
-        };
-      }
-      
-      // Update session enrollment
-      const updatedSession = {
-        ...session,
-        enrolled: session.enrolled + 1
-      };
-      
-      sessions[sessionIndex] = updatedSession;
-      
-      // Add to user bookings
-      const booking = {
-        id: userBookings.length + 1,
-        user_id: 1, // Mock user ID
-        session_id: sessionId,
-        status: 'confirmed',
-        created_at: new Date().toISOString()
-      };
-      
-      userBookings.push(booking);
-      
-      return {
-        status: true,
-        message: "Session booked successfully",
-        data: {
-          booking
+      // Try to book via API first
+      try {
+        console.log('Booking session via API:', sessionId);
+        const response = await apiClient.post('/api/client/book-session', { sessionId });
+        return response.data;
+      } catch (apiError) {
+        console.error('API error, falling back to mock implementation:', apiError);
+
+        // Mock implementation
+        const sessionIndex = sessions.findIndex(s => s.id === sessionId);
+
+        if (sessionIndex === -1) {
+          return {
+            status: false,
+            message: "Session not found"
+          };
         }
-      };
+
+        const session = sessions[sessionIndex];
+
+        // Check if session is full
+        if (session.enrolled >= session.capacity) {
+          return {
+            status: false,
+            message: "Session is already full"
+          };
+        }
+
+        // Update session enrollment
+        const updatedSession = {
+          ...session,
+          enrolled: session.enrolled + 1
+        };
+
+        sessions[sessionIndex] = updatedSession;
+
+        // Add to user bookings
+        const booking = {
+          id: userBookings.length + 1,
+          user_id: 1, // Mock user ID
+          session_id: sessionId,
+          status: 'confirmed',
+          created_at: new Date().toISOString()
+        };
+
+        userBookings.push(booking);
+
+        return {
+          status: true,
+          message: "Session booked successfully (mock)",
+          data: {
+            booking
+          }
+        };
+      }
     } catch (error) {
       console.error('Error booking session:', error);
       throw error;

@@ -17,7 +17,7 @@ const NavLink = ({ to, icon, children }: NavLinkProps) => {
     <Link
       to={to}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 transition-all",
+        "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 transition-all select-none",
         isActive
           ? "bg-black/60 text-yalla-green border-l-2 border-yalla-green pl-[10px]"
           : "hover:text-yalla-green hover:bg-black/60"

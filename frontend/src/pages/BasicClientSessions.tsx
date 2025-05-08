@@ -170,7 +170,7 @@ const BasicClientSessions = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black/40 flex flex-col">
+    <div className="min-h-screen bg-black/40 flex flex-col select-none">
       {/* Use our custom header component */}
       <ClientHeader isAuthenticated={isAuthenticated} userRole={user?.role} />
 
@@ -180,7 +180,7 @@ const BasicClientSessions = () => {
 
         <main className="flex-1 px-6 md:px-10 lg:px-16 py-6 overflow-auto ml-0 md:ml-64"> {/* Add margin-left to account for fixed sidebar */}
           <div className="container mx-auto">
-            <h1 className="text-2xl font-bold mb-6 text-white">Find Sessions</h1>
+            <h1 className="text-2xl font-bold mb-6 text-white select-none">Find Sessions</h1>
 
             {/* Simple search */}
             <div className="mb-8">
@@ -200,13 +200,13 @@ const BasicClientSessions = () => {
           {filteredSessions.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredSessions.map((session) => (
-                <div key={session.id} className="bg-yalla-dark-gray text-white border border-yalla-gray rounded-lg overflow-hidden">
+                <div key={session.id} className="bg-yalla-dark-gray text-white border border-yalla-gray rounded-lg overflow-hidden select-none">
                   <div className="p-4">
                     <div className="flex justify-between items-start">
-                      <h3 className="text-lg font-medium">{session.title}</h3>
+                      <h3 className="text-lg font-medium select-none">{session.title}</h3>
                       <button
                         onClick={() => toggleSaveSession(session.id)}
-                        className="text-yalla-green hover:text-yalla-green/80"
+                        className="text-yalla-green hover:text-yalla-green/80 select-none"
                       >
                         {savedSessions.includes(session.id) ? (
                           <BookmarkCheck className="h-5 w-5" />
@@ -215,34 +215,34 @@ const BasicClientSessions = () => {
                         )}
                       </button>
                     </div>
-                    <p className="text-gray-400 text-sm mt-1">
+                    <p className="text-gray-400 text-sm mt-1 select-none">
                       {session.description.substring(0, 100)}
                       {session.description.length > 100 ? "..." : ""}
                     </p>
                   </div>
                   <div className="p-4 border-t border-yalla-gray">
                     <div className="space-y-3">
-                      <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm select-none">
                         <Calendar className="mr-2 h-4 w-4 text-yalla-green" />
                         <span>{format(new Date(session.date), "MMMM d, yyyy")}</span>
                       </div>
-                      <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm select-none">
                         <Clock className="mr-2 h-4 w-4 text-yalla-green" />
                         <span>{session.time}</span>
                       </div>
-                      <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm select-none">
                         <Users className="mr-2 h-4 w-4 text-yalla-green" />
                         <span>
                           {session.enrolled} / {session.capacity} enrolled
                         </span>
                       </div>
-                      <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm select-none">
                         <DollarSign className="mr-2 h-4 w-4 text-yalla-green" />
                         <span>${session.price}</span>
                       </div>
 
                       <Button
-                        className="w-full bg-yalla-green text-black hover:bg-yalla-green/90"
+                        className="w-full bg-yalla-green text-black hover:bg-yalla-green/90 select-none"
                         disabled={session.enrolled >= session.capacity}
                         onClick={() => handleBookSession(session.id)}
                       >
@@ -254,8 +254,8 @@ const BasicClientSessions = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-400">No sessions found matching your criteria.</p>
+            <div className="text-center py-12 select-none">
+              <p className="text-gray-400 select-none">No sessions found matching your criteria.</p>
             </div>
           )}
           </div>

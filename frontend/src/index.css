@@ -61,8 +61,44 @@
   .yalla-gradient {
     @apply bg-gradient-to-r from-yalla-green to-yalla-green/80;
   }
-  
+
   .hover-scale {
     @apply transition-transform duration-300 hover:scale-105;
   }
+
+  /* Prevent text selection and cursor */
+  .no-select {
+    @apply select-none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Global styles to prevent text cursor on interactive elements */
+button, a, [role="button"], .card, .nav-item, .sidebar-item,
+.dropdown-item, .menu-item, .icon-button, .clickable {
+  cursor: pointer !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+
+/* Prevent text selection on the entire app except where needed */
+body, #root, .app {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection only in specific elements */
+input, textarea, [contenteditable="true"], .selectable-text,
+.allow-select, code, pre {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
 }

@@ -61,10 +61,10 @@ const ClientHeader = ({ isAuthenticated: propIsAuthenticated = false, userRole: 
   return (
     <>
       {isLoggingOut && <LoadingScreen message="Logging out..." />}
-      <header className="w-full bg-black border-b border-yalla-dark-gray sticky top-0 z-50">
+      <header className="w-full bg-black border-b border-yalla-dark-gray sticky top-0 z-50 select-none">
         <div className="w-full max-w-[1920px] mx-auto flex items-center justify-between h-16 px-6 md:px-10 lg:px-16">
-          <Link to="/" className="flex items-center">
-            <span className="text-2xl font-bold text-white">
+          <Link to="/" className="flex items-center select-none">
+            <span className="text-2xl font-bold text-white select-none">
               Yalla<span className="text-yalla-green">Fit</span>
             </span>
           </Link>
@@ -74,19 +74,19 @@ const ClientHeader = ({ isAuthenticated: propIsAuthenticated = false, userRole: 
             {/* Common links for both authenticated and non-authenticated users */}
             <Link
               to="/store"
-              className="text-sm font-medium text-white hover:text-yalla-green transition-colors"
+              className="text-sm font-medium text-white hover:text-yalla-green transition-colors select-none"
             >
               Store
             </Link>
             <Link
               to="/contact"
-              className="text-sm font-medium text-white hover:text-yalla-green transition-colors"
+              className="text-sm font-medium text-white hover:text-yalla-green transition-colors select-none"
             >
               Contact
             </Link>
             <Link
               to="/about"
-              className="text-sm font-medium text-white hover:text-yalla-green transition-colors"
+              className="text-sm font-medium text-white hover:text-yalla-green transition-colors select-none"
             >
               About
             </Link>
@@ -96,7 +96,7 @@ const ClientHeader = ({ isAuthenticated: propIsAuthenticated = false, userRole: 
                 {/* Dashboard link for logged-in users */}
                 <Link
                   to="/dashboard"
-                  className="text-sm font-medium text-white hover:text-yalla-green transition-colors flex items-center gap-1"
+                  className="text-sm font-medium text-white hover:text-yalla-green transition-colors flex items-center gap-1 select-none"
                 >
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
@@ -179,10 +179,10 @@ const ClientHeader = ({ isAuthenticated: propIsAuthenticated = false, userRole: 
               </>
             )}
           </div>
-          
-          <Button 
-            variant="ghost" 
-            size="icon" 
+
+          <Button
+            variant="ghost"
+            size="icon"
             className="absolute top-4 right-4 text-white"
             onClick={() => setMobileMenuOpen(false)}
           >

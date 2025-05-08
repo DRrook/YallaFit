@@ -35,6 +35,9 @@ const DashboardSidebar = () => {
 
   console.log('DashboardSidebar - User Role:', userRole);
 
+  // Debug current path
+  console.log('DashboardSidebar - Current Path:', location.pathname);
+
   // Define navigation items based on role
   const commonLinks = [
     { to: "/dashboard", label: "Dashboard", icon: <Home className="h-4 w-4" /> },

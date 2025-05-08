@@ -23,6 +23,7 @@ import Profile from "./pages/Profile";
 import Sessions from "./pages/Sessions";
 import Bookings from "./pages/Bookings";
 import ClientSessions from "./pages/ClientSessions";
+import FindSessions from "./pages/FindSessions";
 
 // Layouts
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -59,17 +60,15 @@ const App = () => (
               {/* You can add more routes here that should use DashboardLayout */}
             </Route>
 
-            {/* Client Sessions Route with DashboardLayout */}
+            {/* Client Sessions Route - Standalone page with built-in layout */}
             <Route
               path="/client/sessions"
               element={
                 <ProtectedRoute>
-                  <DashboardLayout />
+                  <FindSessions />
                 </ProtectedRoute>
               }
-            >
-              <Route index element={<ClientSessions />} />
-            </Route>
+            />
 
             {/* Error Pages */}
             <Route path="/access-denied" element={<AccessDenied />} />

@@ -4,11 +4,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar, Clock, Users, DollarSign, Search, Bookmark, BookmarkCheck, Home, LogOut } from "lucide-react";
+import { Calendar, Clock, Users, DollarSign, Search, Bookmark, BookmarkCheck } from "lucide-react";
 import LoadingScreen from "@/components/ui/loading-screen";
 import { Session } from "@/api/services/sessionService";
 import clientSessionService from "@/api/services/clientSessionService";
 import { format } from "date-fns";
+import ClientHeader from "@/components/layout/ClientHeader";
+import ClientSidebar from "@/components/layout/ClientSidebar";
 
 const BasicClientSessions = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -23,7 +25,7 @@ const BasicClientSessions = () => {
   useEffect(() => {
     fetchSessions();
     fetchSavedSessions();
-    
+
     // Debug user role
     console.log('BasicClientSessions - User:', user);
   }, []);
@@ -149,7 +151,7 @@ const BasicClientSessions = () => {
   if (isLoading) {
     return <LoadingScreen />;
   }
-  
+
   // Check if user is a client
   if (user?.role !== 'client' && user?.role !== undefined) {
     return (
@@ -157,8 +159,8 @@ const BasicClientSessions = () => {
         <h1 className="text-2xl font-bold mb-6 text-white">Access Denied</h1>
         <p className="text-gray-400">This page is only available to client users.</p>
         <p className="text-gray-400 mt-2">Your current role: {user?.role || 'Unknown'}</p>
-        <Link 
-          to="/dashboard" 
+        <Link
+          to="/dashboard"
           className="mt-8 bg-yalla-green text-black py-2 px-4 rounded text-center hover:bg-yalla-green/90"
         >
           Go to Dashboard
@@ -169,47 +171,30 @@ const BasicClientSessions = () => {
 
   return (
     <div className="min-h-screen bg-black/40 flex flex-col">
-      {/* Simple header */}
-      <header className="bg-black/80 text-white py-4 px-6 sticky top-0 z-50">
-        <div className="container mx-auto flex justify-between items-center">
-          <Link to="/" className="text-xl font-bold text-yalla-green">YallaFit</Link>
-          
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard" className="flex items-center gap-1 text-white hover:text-yalla-green">
-              <Home className="h-4 w-4" /> Dashboard
-            </Link>
-            
-            <Link to="/bookings" className="flex items-center gap-1 text-white hover:text-yalla-green">
-              <Bookmark className="h-4 w-4" /> My Bookings
-            </Link>
-            
-            <button 
-              onClick={handleLogout}
-              className="flex items-center gap-1 text-white hover:text-yalla-green"
-            >
-              <LogOut className="h-4 w-4" /> Logout
-            </button>
-          </div>
-        </div>
-      </header>
-      
-      <main className="flex-1 p-6">
-        <div className="container mx-auto">
-          <h1 className="text-2xl font-bold mb-6 text-white">Find Sessions</h1>
+      {/* Use our custom header component */}
+      <ClientHeader isAuthenticated={isAuthenticated} userRole={user?.role} />
 
-          {/* Simple search */}
-          <div className="mb-8">
-            <div className="relative max-w-md">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-              <Input
-                type="text"
-                placeholder="Search sessions..."
-                className="pl-8 bg-yalla-dark-gray text-white border-yalla-gray"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+      <div className="flex flex-1 pt-16"> {/* pt-16 to offset for sticky header height */}
+        {/* Use our custom sidebar component */}
+        <ClientSidebar />
+
+        <main className="flex-1 px-6 md:px-10 lg:px-16 py-6 overflow-auto ml-0 md:ml-64"> {/* Add margin-left to account for fixed sidebar */}
+          <div className="container mx-auto">
+            <h1 className="text-2xl font-bold mb-6 text-white">Find Sessions</h1>
+
+            {/* Simple search */}
+            <div className="mb-8">
+              <div className="relative max-w-md">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                <Input
+                  type="text"
+                  placeholder="Search sessions..."
+                  className="pl-8 bg-yalla-dark-gray text-white border-yalla-gray"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
 
           {/* Sessions grid */}
           {filteredSessions.length > 0 ? (
@@ -273,8 +258,9 @@ const BasicClientSessions = () => {
               <p className="text-gray-400">No sessions found matching your criteria.</p>
             </div>
           )}
-        </div>
-      </main>
+          </div>
+        </main>
+      </div>
     </div>
   );
 };

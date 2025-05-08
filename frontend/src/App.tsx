@@ -56,8 +56,19 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/sessions" element={<Sessions />} />
               <Route path="/bookings" element={<Bookings />} />
-              <Route path="/client/sessions" element={<ClientSessions />} />
               {/* You can add more routes here that should use DashboardLayout */}
+            </Route>
+
+            {/* Client Sessions Route with DashboardLayout */}
+            <Route
+              path="/client/sessions"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<ClientSessions />} />
             </Route>
 
             {/* Error Pages */}

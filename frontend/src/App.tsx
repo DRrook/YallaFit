@@ -24,6 +24,8 @@ import Sessions from "./pages/Sessions";
 import Bookings from "./pages/Bookings";
 import ClientSessions from "./pages/ClientSessions";
 import FindSessions from "./pages/FindSessions";
+import TestPage from "./pages/TestPage";
+import SimpleClientSessions from "./pages/SimpleClientSessions";
 
 // Layouts
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -60,12 +62,15 @@ const App = () => (
               {/* You can add more routes here that should use DashboardLayout */}
             </Route>
 
-            {/* Client Sessions Route - Standalone page with built-in layout */}
+            {/* Simple test routes */}
+            <Route path="/test" element={<TestPage />} />
+
+            {/* Client Sessions Route - Simple version */}
             <Route
               path="/client/sessions"
               element={
                 <ProtectedRoute>
-                  <FindSessions />
+                  <SimpleClientSessions />
                 </ProtectedRoute>
               }
             />

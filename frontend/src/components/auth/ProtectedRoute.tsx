@@ -12,6 +12,9 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
 
+  console.log('ProtectedRoute - Path:', location.pathname);
+  console.log('ProtectedRoute - Auth State:', { isAuthenticated, user, isLoading });
+
   // If authentication is still loading, show the loading screen
   if (isLoading) {
     return <LoadingScreen />;
